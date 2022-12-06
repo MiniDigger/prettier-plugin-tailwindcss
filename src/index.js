@@ -78,9 +78,21 @@ function sortClasses(classStr, { env, ignoreFirst = false, ignoreLast = false })
   }
 
   let result = ''
-  let parts = classStr.split(/(\s+)/)
+
+  // handle variant groups
+  // https://regex101.com/r/uhVNbt/1
+  let substituted = classStr.replaceAll(/(?<prefix>\w+):\((?<inner>[^)]*)\)/g, (substring, prefix, inner) => {
+    return prefix + ":(" + sortClasses(inner, {env, ignoreFirst, ignoreLast}) + ")";
+  });
+  // https://regex101.com/r/qMKdMW/2
+  let parts = substituted.split(/((?!\(.*)\s+(?![^(]*?\)))/)
   let classes = parts.filter((_, i) => i % 2 === 0)
   let whitespace = parts.filter((_, i) => i % 2 !== 0)
+
+  //console.log("classStr", classStr);
+  //console.log("substituted", substituted);
+  //console.log("parts", parts);
+  //console.log("classes", classes);
 
   if (classes[classes.length - 1] === '') {
     classes.pop()
@@ -97,18 +109,43 @@ function sortClasses(classStr, { env, ignoreFirst = false, ignoreLast = false })
   }
 
   classes = sortClassList(classes, { env })
+  //console.log("sorted", classes);
 
   for (let i = 0; i < classes.length; i++) {
     result += `${classes[i]}${whitespace[i] ?? ''}`
   }
 
+  //console.log("result", result);
+
   return prefix + result + suffix
+}
+
+const order = {
+  "sm": 20n,
+  "md": 21n,
+  "lg": 22n,
+  "xl": 23n,
+  "hover": 30n,
+  "focus": 31n,
+  "group": 32n,
 }
 
 function sortClassList(classList, { env }) {
   let classNamesWithOrder = env.context.getClassOrder
     ? env.context.getClassOrder(classList)
     : getClassOrderPolyfill(classList, { env })
+
+  classNamesWithOrder = classNamesWithOrder.map(([name, value]) => {
+    const split = name.split(":");
+    if (split.length > 1) {
+      value = order[split[0]] || null;
+      //console.log("found", split[0], split, value);
+    }
+    return [name, value];
+  })
+
+  //console.log("b:", classList);
+  //console.log("a:", classNamesWithOrder);
 
   return classNamesWithOrder
     .sort(([, a], [, z]) => {

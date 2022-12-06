@@ -2,6 +2,10 @@
 
 A [Prettier](https://prettier.io/) plugin for Tailwind CSS v3.0+ that automatically sorts classes based on [our recommended class order](https://tailwindcss.com/blog/automatic-class-sorting-with-prettier#how-classes-are-sorted).
 
+# Fork
+
+This fork adds support for windi.css style variant groups: `md:(text-red-400 bg-white)`.
+
 ## Installation
 
 To get started, just install `prettier-plugin-tailwindcss` as a dev-dependency:

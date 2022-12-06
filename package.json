@@ -22,6 +22,7 @@
     "predev": "npm run _pre",
     "dev": "npm run _esbuild -- --watch",
     "test": "jest",
+    "testwatch": "jest --watch",
     "prepublishOnly": "npm run build && npm test && node scripts/copy-licenses.js",
     "format": "prettier \"src/**/*.js\" \"scripts/**/*.js\" \"tests/test.js\" --write --print-width 100 --single-quote --no-semi --plugin-search-dir ./tests"
   },
